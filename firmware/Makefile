@@ -1,17 +1,20 @@
+# ESP32 build/organization entry point.
+# The application is intentionally kept portable and RTOS-oriented; the
+# FreeRTOS kernel/toolchain integration is supplied by the target environment.
+
 TARGET := embedded_monitor
 BUILD := build
-CC := arm-none-eabi-gcc
 
-CFLAGS := -mcpu=cortex-m3 -mthumb -std=c11 -Wall -Wextra -O2
+CFLAGS := -std=c11 -Wall -Wextra -O2
 CFLAGS += -Ifirmware/inc -Ithird_party/FreeRTOS-Kernel/include
-CFLAGS += -Ithird_party/FreeRTOS-Kernel/portable/GCC/ARM_CM3
+CFLAGS += -Ithird_party/FreeRTOS-Kernel/portable/GCC/ESP32
 
 SRCS := firmware/src/main.c firmware/src/fault_manager.c firmware/src/telemetry.c firmware/src/platform_stub.c
 
 all:
-	@echo "FreeRTOS kernel is an external dependency."
-	@echo "Place it under third_party/FreeRTOS-Kernel and add startup/linker sources before a hardware build."
-	@echo "Application sources: $(SRCS)"
+	@echo "ESP32 + FreeRTOS application sources:"
+	@printf '  %s\n' $(SRCS)
+	@echo "Provide the FreeRTOS kernel and ESP32 toolchain in the target environment for a hardware build."
 
 clean:
 	rm -rf $(BUILD)
