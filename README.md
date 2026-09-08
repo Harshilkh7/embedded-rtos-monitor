@@ -1,48 +1,50 @@
-# Real-Time Embedded Monitoring & Multi-Protocol Communication System
+# Real-Time ESP32 RTOS Monitoring & Multi-Protocol Communication System
 
-A simulation-first **ESP32 + FreeRTOS-oriented** embedded monitoring platform demonstrating real-time task design, ADC acquisition, UART telemetry, I2C/SPI device interfaces, fault detection, watchdog supervision, and automated validation.
+A simulation-first **ESP32 + FreeRTOS** embedded monitoring platform demonstrating real-time task design, ADC acquisition, UART telemetry, I²C/SPI peripheral initialization, fault detection, watchdog supervision, and automated validation.
 
-> **Portfolio status:** The host-side simulator and validation suite are runnable without hardware. The MCU application is structured for an **ESP32 DevKit + FreeRTOS-style** target. The FreeRTOS kernel is intentionally kept as an external dependency rather than copied into this repository.
+> **Portfolio status:** the host simulator, validation suite and ESP32 firmware build are runnable without physical hardware. The firmware targets an ESP32 DevKit through PlatformIO and uses the FreeRTOS scheduler supplied by the ESP32 Arduino framework.
 
 ## Architecture
 
 ```text
-Virtual Sensors
-      |
-      v
-+-----------------------+
-| ESP32 / RTOS App      |
-|-----------------------|
-| Sensor Task           |
-| Communication Task    |
-| Monitor Task          |
-| Watchdog Supervision  |
-+----------+------------+
-           |
-     UART telemetry
-           |
-           v
-+-----------------------+
-| Python Host Monitor   |
-| protocol + dashboard  |
-+-----------------------+
+ESP32 ADC / internal temperature
+            |
+            v
++-----------------------------+
+| FreeRTOS Application        |
+|-----------------------------|
+| Sensor Task                 |
+| Communication Task          |
+| Monitor / Watchdog Task     |
+| Queue-based IPC             |
++---------------+-------------+
+                |
+          UART telemetry
+                |
+                v
++-----------------------------+
+| Python Host Monitor         |
+| CRC decoder + analytics     |
++-----------------------------+
 
-I2C / SPI are modeled as peripheral-device interfaces.
-ADC models voltage/current/temperature acquisition.
+I²C / SPI -> peripheral bus initialization
+Fault Manager -> NORMAL / WARNING / CRITICAL
+Watchdog -> task liveness supervision
 ```
 
 ## Features
 
-- C firmware organized around RTOS tasks and queues
-- ADC-based voltage/current/temperature acquisition
-- UART telemetry with framed packets and CRC-8
-- I2C sensor abstraction
-- SPI device abstraction
+- Native **ESP32 DevKit firmware** built with PlatformIO and Arduino-ESP32
+- FreeRTOS tasks with explicit priorities, stack sizes and queue-based IPC
+- ADC-based voltage/current acquisition plus ESP32 internal temperature trend monitoring
+- UART telemetry using a fixed binary frame and **CRC-8** integrity check
+- I²C and SPI peripheral bus initialization at the platform boundary
 - Fault-state machine: `NORMAL`, `WARNING`, `CRITICAL`
-- Watchdog supervision model
-- Python host monitor and deterministic simulator
-- Pytest validation
-- GitHub Actions CI
+- Task heartbeat monitoring and ESP32 task-watchdog supervision
+- Python host monitor and deterministic virtual MCU
+- Protocol round-trip, corruption, fault and watchdog tests with pytest
+- Wokwi ESP32 simulation configuration
+- GitHub Actions CI for both Python validation and ESP32 firmware compilation
 - Browser dashboard under `docs/`
 
 ## Repository layout
@@ -50,15 +52,16 @@ ADC models voltage/current/temperature acquisition.
 ```text
 firmware/
   inc/                 Firmware interfaces
-  src/                 RTOS application and drivers
-  Makefile             ESP32-oriented build entry point
+  src/                 FreeRTOS application + ESP32 drivers
+  platformio.ini       Canonical ESP32 build configuration
+  Makefile             PlatformIO convenience wrapper
 
 host/
-  monitor.py           Host telemetry decoder
+  monitor.py           Host telemetry decoder + analytics
   simulator.py         Deterministic virtual MCU
 
 protocol/
-  telemetry.py         Packet format + CRC
+  telemetry.py         Packet format + CRC-8
 
 tests/
   test_protocol.py
@@ -69,18 +72,36 @@ docs/
   index.html            Interactive project dashboard
   architecture.md       Detailed architecture notes
 
-.github/workflows/
-  ci.yml                Automated Python validation
+simulation/wokwi/
+  diagram.json          ESP32 + sensor simulation
+  wokwi.toml            Firmware/ELF mapping
 
-tools/
-  run_demo.py            CLI demonstration
+.github/workflows/
+  ci.yml                Python tests + ESP32 firmware build
 ```
+
+## Build the ESP32 firmware
+
+Install PlatformIO, then:
+
+```bash
+cd firmware
+pio run
+```
+
+Or:
+
+```bash
+make
+```
+
+PlatformIO's `esp32dev` environment targets the Espressif ESP32 Dev Module. The same firmware is used by the Wokwi simulation after building.
 
 ## Run the validation suite
 
 ```bash
 python -m pip install -r requirements.txt
-pytest -q
+PYTHONPATH=. pytest -q
 ```
 
 ## Run the host simulation
@@ -93,16 +114,10 @@ python tools/run_demo.py
 
 Open `docs/index.html` locally in a browser, or publish the `docs/` directory with GitHub Pages.
 
-## MCU dependency
-
-The firmware application expects the [FreeRTOS Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) to be supplied as an external dependency when building the RTOS application.
-
-The repository deliberately does not vendor the kernel source. This keeps the portfolio project focused on application-level embedded engineering.
-
 ## Resume description
 
-> Developed a real-time ESP32 monitoring system using C and FreeRTOS-style task architecture, ADC acquisition, UART telemetry, I2C/SPI device interfaces, CRC-protected communication, watchdog supervision, fault-state management, Python simulation, and automated pytest validation.
+> Developed a real-time ESP32 monitoring system using C/C++ and FreeRTOS task architecture, ADC acquisition, queue-based IPC, UART telemetry, I²C/SPI interfaces, CRC-protected communication, watchdog supervision, fault-state management, Python simulation, Wokwi modeling, and automated pytest validation.
 
 ## Engineering honesty
 
-The current repository provides a **runnable host simulation and validation environment** plus MCU application scaffolding. It should not be described as hardware-tested until the firmware is built, flashed, and verified on an ESP32 board.
+No physical hardware measurements are claimed. The ESP32 firmware is buildable and simulated through Wokwi; physical-board flashing and electrical measurements remain separate validation steps.
