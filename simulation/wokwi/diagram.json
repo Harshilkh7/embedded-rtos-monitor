@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "author": "Embedded RTOS Monitor",
+  "editor": "wokwi",
+  "parts": [
+    {"type":"board-esp32-devkit-c-v4","id":"mcu","top":0,"left":0,"attrs":{}},
+    {"type":"wokwi-led","id":"led","top":120,"left":360,"attrs":{"color":"green"}},
+    {"type":"wokwi-resistor","id":"r","top":180,"left":360,"attrs":{"value":"330"}},
+    {"type":"wokwi-potentiometer","id":"voltage","top":40,"left":420,"attrs":{"value":"100"}},
+    {"type":"wokwi-potentiometer","id":"current","top":160,"left":420,"attrs":{"value":"20"}}
+  ],
+  "connections": [
+    ["mcu:D2","led:A","green",["h0"]],
+    ["led:C","r:1","green",["v0"]],
+    ["r:2","mcu:GND.1","black",["v0"]],
+    ["voltage:VCC","mcu:3V3","red",["h0"]],
+    ["voltage:GND","mcu:GND.1","black",["h0"]],
+    ["voltage:SIG","mcu:D34","blue",["h0"]],
+    ["current:VCC","mcu:3V3","red",["h0"]],
+    ["current:GND","mcu:GND.1","black",["h0"]],
+    ["current:SIG","mcu:D35","yellow",["h0"]]
+  ]
+}
