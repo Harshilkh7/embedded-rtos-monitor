@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include <esp_task_wdt.h>
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+#include <freertos/queue.h>
 #include "app_config.h"
 #include "fault_manager.h"
 #include "platform.h"
