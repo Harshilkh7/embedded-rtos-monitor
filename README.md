@@ -1,8 +1,8 @@
 # Real-Time Embedded Monitoring & Multi-Protocol Communication System
 
-A simulation-first STM32/FreeRTOS-oriented embedded monitoring platform demonstrating real-time task design, ADC acquisition, UART telemetry, I2C/SPI device interfaces, fault detection, watchdog supervision, and automated validation.
+A simulation-first **ESP32 + FreeRTOS-oriented** embedded monitoring platform demonstrating real-time task design, ADC acquisition, UART telemetry, I2C/SPI device interfaces, fault detection, watchdog supervision, and automated validation.
 
-> **Portfolio status:** The host-side simulator and validation suite are runnable without hardware. The MCU application is structured for an STM32F103 + FreeRTOS target; the official FreeRTOS Kernel is intentionally kept as an external dependency rather than copied into this repository.
+> **Portfolio status:** The host-side simulator and validation suite are runnable without hardware. The MCU application is structured for an **ESP32 DevKit + FreeRTOS-style** target. The FreeRTOS kernel is intentionally kept as an external dependency rather than copied into this repository.
 
 ## Architecture
 
@@ -11,7 +11,7 @@ Virtual Sensors
       |
       v
 +-----------------------+
-| STM32 / FreeRTOS App  |
+| ESP32 / RTOS App      |
 |-----------------------|
 | Sensor Task           |
 | Communication Task    |
@@ -51,7 +51,7 @@ ADC models voltage/current/temperature acquisition.
 firmware/
   inc/                 Firmware interfaces
   src/                 RTOS application and drivers
-  Makefile             STM32 build entry point
+  Makefile             ESP32-oriented build entry point
 
 host/
   monitor.py           Host telemetry decoder
@@ -91,22 +91,18 @@ python tools/run_demo.py
 
 ## Open the dashboard
 
-Open `docs/index.html` locally in a browser, or publish the `docs/` directory with GitHub Pages after the repository is created.
+Open `docs/index.html` locally in a browser, or publish the `docs/` directory with GitHub Pages.
 
 ## MCU dependency
 
-The firmware application expects the [FreeRTOS Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) to be supplied under:
-
-```text
-third_party/FreeRTOS-Kernel/
-```
+The firmware application expects the [FreeRTOS Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel) to be supplied as an external dependency when building the RTOS application.
 
 The repository deliberately does not vendor the kernel source. This keeps the portfolio project focused on application-level embedded engineering.
 
 ## Resume description
 
-> Developed a real-time STM32 monitoring system using C and FreeRTOS-style task architecture, ADC acquisition, UART telemetry, I2C/SPI device interfaces, CRC-protected communication, watchdog supervision, fault-state management, Python simulation, and automated pytest validation.
+> Developed a real-time ESP32 monitoring system using C and FreeRTOS-style task architecture, ADC acquisition, UART telemetry, I2C/SPI device interfaces, CRC-protected communication, watchdog supervision, fault-state management, Python simulation, and automated pytest validation.
 
 ## Engineering honesty
 
-The current repository provides a **runnable host simulation and validation environment** plus MCU application scaffolding. It should not be described as hardware-tested until the firmware is built, flashed, and verified on an STM32 board.
+The current repository provides a **runnable host simulation and validation environment** plus MCU application scaffolding. It should not be described as hardware-tested until the firmware is built, flashed, and verified on an ESP32 board.
