@@ -9,5 +9,7 @@ uint16_t adc_read_current_ma(void);
 float adc_read_temperature_c(void);
 void uart_send(const uint8_t *data, uint16_t length);
 void watchdog_kick(void);
+uint8_t i2c_probe(uint8_t address);
+uint8_t spi_transfer(uint8_t data);
 
 #endif
