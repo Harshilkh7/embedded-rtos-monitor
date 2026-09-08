@@ -3,6 +3,10 @@
 
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     FAULT_NORMAL = 0,
     FAULT_WARNING = 1,
@@ -12,5 +16,9 @@ typedef enum {
 fault_state_t fault_classify(uint16_t voltage_mv,
                              uint16_t current_ma,
                              uint16_t temperature_c);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
