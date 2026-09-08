@@ -11,9 +11,9 @@ Consumes telemetry records and serializes them into a framed UART packet with a 
 ### Monitor Task
 Runs at a lower rate and represents watchdog supervision. A production implementation would also observe task heartbeats and trigger a safe state when a task stops making progress.
 
-## Peripheral model
+## ESP32 peripheral model
 
-- **ADC:** voltage, current, and temperature acquisition.
+- **ADC:** ESP32 voltage, current, and temperature acquisition boundary.
 - **UART:** host telemetry transport.
 - **I2C:** reserved for external digital sensors.
 - **SPI:** reserved for high-rate peripheral or display/flash interface.
@@ -28,3 +28,7 @@ Runs at a lower rate and represents watchdog supervision. A production implement
 | Temperature | >70 C | >85 C |
 
 The Python simulator and C fault manager use the same thresholds so the host validation environment can exercise the embedded decision logic deterministically.
+
+## Validation boundary
+
+The repository separates the hardware-facing ESP32 platform boundary from the RTOS application logic. This lets the host simulator and pytest suite validate task behavior, telemetry framing, watchdog logic, and fault decisions without requiring a physical board for every run.
