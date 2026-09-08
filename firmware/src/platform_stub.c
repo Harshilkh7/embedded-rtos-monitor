@@ -1,4 +1,4 @@
-/* Platform boundary. Replace these functions with STM32 drivers for hardware. */
+/* ESP32 platform boundary for the RTOS-oriented application model. */
 #include "platform.h"
 
 void platform_init(void) {}
