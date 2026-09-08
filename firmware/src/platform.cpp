@@ -1,10 +1,10 @@
 #include <Arduino.h>
+#include <esp_task_wdt.h>
 #include "platform.h"
 
 namespace {
 constexpr uint8_t VOLTAGE_ADC_PIN = 34;
 constexpr uint8_t CURRENT_ADC_PIN = 35;
-constexpr float ADC_FULL_SCALE_V = 3.30f;
 constexpr float CURRENT_FULL_SCALE_A = 3.00f;
 }
 
@@ -27,18 +27,16 @@ uint16_t adc_read_current_ma(void) {
 }
 
 float adc_read_temperature_c(void) {
-    // Arduino-ESP32 exposes temperatureRead() for the ESP32 internal sensor.
-    // It is used for trend monitoring, not as a precision ambient sensor.
+    // Internal silicon temperature is useful for trend monitoring, not
+    // precision ambient measurement.
     return temperatureRead();
 }
 
 void uart_send(const uint8_t *data, uint16_t length) {
     Serial.write(data, length);
-    Serial.flush();
 }
 
 void watchdog_kick(void) {
     // The calling RTOS task must first be subscribed with esp_task_wdt_add().
-    extern esp_err_t esp_task_wdt_reset(void);
     (void)esp_task_wdt_reset();
 }
